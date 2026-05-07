@@ -2,8 +2,15 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Busca de CEP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CEP API Pro</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/static/app_icon.png">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
@@ -24,8 +31,10 @@
             background-color: var(--bg);
             color: var(--text-main);
             margin: 0;
-            padding: 0;
+            padding: 2rem 0;
+            box-sizing: border-box;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
@@ -483,11 +492,11 @@
         
         /* Footer */
         .footer {
-            margin-top: 3rem;
+            margin-top: 2rem;
             text-align: center;
             font-size: 0.85rem;
             color: var(--text-muted);
-            padding: 1.5rem 0;
+            width: 100%;
         }
         .footer a {
             color: var(--primary);
@@ -497,9 +506,32 @@
         .footer a:hover {
             color: var(--primary-hover);
         }
+
+        /* Logo */
+        .page-logo {
+            position: absolute;
+            top: -100px;
+            left: 1.5rem;
+            height: 550px;
+            width: auto;
+            animation: fadeIn 0.5s ease-out;
+            z-index: 10;
+            mix-blend-mode: screen;
+        }
+
+        @media (max-width: 768px) {
+            .page-logo {
+                position: static;
+                margin-top: -80px;
+                margin-bottom: -50px;
+                height: 300px;
+            }
+        }
     </style>
 </head>
 <body>
+
+    <img src="/static/logo.png" alt="CEP API Pro Logo" class="page-logo">
 
     <div class="container">
         <h1 id="main-title">Busca CEP</h1>
@@ -586,9 +618,10 @@
     
     <footer class="footer">
         <p>Desenvolvido por <strong>Caique Novaes</strong> | &copy; 2026</p>
-        <p>
+        <p style="margin: 0.5rem 0; font-style: italic; opacity: 0.8;">"Simplificando a geolocalização global, um código postal de cada vez."</p>
+        <p style="margin-top: 0.8rem;">
             <a href="https://github.com/caiquenovaes1994/" target="_blank" rel="noopener noreferrer">GitHub</a> | 
-            <a href="mailto:caiquenovaes1994@gmail.com">Contato</a>
+            <a href="mailto:caiquenovaes1994@gmail.com"><E-mail>E-mail</E-mail></a>
         </p>
     </footer>
 
@@ -1033,6 +1066,18 @@
                 console.error('Falha ao copiar texto: ', err);
             }
         });
+        // Registro do Service Worker (PWA)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then((registration) => {
+                        console.log('ServiceWorker registrado com sucesso:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('Falha ao registrar ServiceWorker:', error);
+                    });
+            });
+        }
     </script>
 </body>
 </html>

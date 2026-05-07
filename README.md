@@ -9,7 +9,7 @@
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
 
-![Version](https://img.shields.io/badge/version-1.0.0-brightgreen?style=flat-square)
+[![Version](https://img.shields.io/badge/version-1.1.0-brightgreen?style=flat-square)](RELEASE_NOTES_v1.1.0.md)
 ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
 ![Status](https://img.shields.io/badge/status-production--ready-success?style=flat-square)
 
@@ -25,6 +25,7 @@
 - [Endpoints](#-endpoints)
 - [Interface Web](#-interface-web)
 - [Provedores de Dados](#-provedores-de-dados)
+- [Histórico de Versões](#-histórico-de-versões)
 - [Autor](#-autor)
 
 ---
@@ -91,6 +92,8 @@ Requisição do Usuário
 
 ### Frontend
 
+- **Progressive Web App (PWA):** Instalação nativa em Desktop/Mobile com Service Workers e ícone dedicado (`app_icon.png`).
+- **Identidade Visual:** Logo de alta resolução integrado fluidamente via CSS Blend Modes.
 - Interface **Dark Mode** premium servida diretamente pela própria API na rota `/`.
 - **Sistema de abas** Brasil / Internacional com título dinâmico.
 - **Dropdown customizado** com bandeiras de 197 países via FlagCDN, com **busca por teclado** com buffer de caracteres e normalização de acentos.
@@ -162,8 +165,6 @@ GET /api/postal/{country}/{postal}
 
 Acesse `http://localhost:8000` para utilizar a interface gráfica integrada.
 
-A API também expõe documentação interativa (Swagger UI) em `http://localhost:8000/docs`.
-
 ---
 
 ## 🔌 Provedores de Dados
@@ -176,7 +177,18 @@ A API também expõe documentação interativa (Swagger UI) em `http://localhost
 
 ---
 
-## 👨‍💻 Autor
+## 📜 Histórico de Versões
+
+| Versão | Data | Descrição |
+| :--- | :--- | :--- |
+| **v1.1.0** | Mai/2026 | Suporte a PWA, refatoração de Layout (CSS Grid/Flexbox) e Identidade Visual (Novo Logo). |
+| **v1.0.0** | Mai/2026 | Lançamento oficial — Backend assíncrono, motor de fallback e interface Dark Mode. |
+
+> Veja as notas completas da versão atual em [RELEASE_NOTES_v1.1.0.md](RELEASE_NOTES_v1.1.0.md).
+
+---
+
+## 👤 Autor
 
 ### Caique Novaes
 

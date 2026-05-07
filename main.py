@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Header, HTTPException, Response, Query
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 import httpx
 import xml.etree.ElementTree as ET
 import xml.dom.minidom
@@ -9,6 +10,8 @@ app = FastAPI(
     title="API de Busca de CEP", 
     description="API para buscar informações de endereços usando o CEP, suportando respostas em JSON e XML."
 )
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
 def read_root():
