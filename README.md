@@ -1,6 +1,6 @@
 # 🌍 CEP API Pro
 
-![CEP API Pro Logo](static/logo.png)
+![CEP API Pro Logo](static/logo_readme.png)
 
 ## Hub Global de Busca de Endereços
 
