@@ -178,9 +178,9 @@ A API também expõe documentação interativa (Swagger UI) em `http://localhost
 
 ## 👨‍💻 Autor
 
-### Caique
+### Caique Novaes
 
 > *Simplificando a geolocalização global, um código postal de cada vez.*
 
-[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/caiqu)
-[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:contato@exemplo.com)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/caiquenovaes1994/)
+[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](https://mail.google.com/mail/?view=cm&fs=1&to=caiquenovaes1994@gmail.com)
