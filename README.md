@@ -23,7 +23,6 @@
 - [Arquitetura](#-arquitetura)
 - [Funcionalidades](#-funcionalidades)
 - [Endpoints](#-endpoints)
-- [Interface Web](#-interface-web)
 - [Provedores de Dados](#-provedores-de-dados)
 - [Histórico de Versões](#-histórico-de-versões)
 - [Autor](#-autor)
@@ -158,12 +157,6 @@ GET /api/postal/{country}/{postal}
   ]
 }
 ```
-
----
-
-## 🖥 Interface Web
-
-Acesse `http://localhost:8000` para utilizar a interface gráfica integrada.
 
 ---
 
