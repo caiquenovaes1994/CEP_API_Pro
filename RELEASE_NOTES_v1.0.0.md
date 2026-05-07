@@ -6,7 +6,7 @@ Esta versão marca a transformação de um simples buscador de CEPs brasileiros 
 
 ## ✨ Novas Funcionalidades (Features)
 
-- **Suporte Global com 195 Países:** Adicionada a aba "Internacional", permitindo consultas de Códigos Postais do mundo inteiro através de integração primária com o provedor *Zippopotam.us*.
+- **Suporte Global com 197 Países:** Adicionada a aba "Internacional", permitindo consultas de Códigos Postais do mundo inteiro através de integração primária com o provedor *Zippopotam.us*.
 - **Motor Duplo de Fallback (OpenStreetMap):** Implementada estratégia de resiliência. Caso o provedor primário não possua dados do país (ex: Costa Rica), o backend aciona instantaneamente a API do *Nominatim*, converte o resultado dinamicamente e entrega o JSON/XML perfeitamente formatado.
 - **Frontend Premium com "Dark Mode":** A página principal foi recriada do zero utilizando as melhores práticas de UI/UX, incluindo um seletor de países customizado renderizado via JS com busca nativa pelo teclado e inclusão de imagens de alta definição via FlagCDN.
 - **Tradução Automática de Caracteres Especiais:** Países que retornam resultados em alfabetos não ocidentais (ex: Japonês, Chinês) agora são automaticamente convertidos para caracteres romanos através do cabeçalho de tradução inteligente.
@@ -20,6 +20,7 @@ Esta versão marca a transformação de um simples buscador de CEPs brasileiros 
 - **Sanitização Regional de Inputs:** O Javascript foi treinado para higienizar os códigos antes da busca, isolando prefixos corretos para países que possuem CEPs complexos (ex: UK, Holanda, Canadá, Taiwan).
 
 ## 🐛 Correções de Bugs (Bug Fixes)
+
 - Correção no gerador recursivo de XML (função `dict_to_xml`) para suportar listas e dicionários aninhados provenientes das consultas globais.
 - Correção de erro de referência no parser do Frontend durante a mudança de estrutura do Select para divs customizadas.
 
