@@ -11,7 +11,7 @@
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
 
-[![Version](https://img.shields.io/badge/version-1.1.0-brightgreen?style=flat-square)](RELEASE_NOTES_v1.1.0.md)
+[![Version](https://img.shields.io/badge/version-2.0.0-brightgreen?style=flat-square)](RELEASE_NOTES_v2.0.0.md)
 ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
 ![Status](https://img.shields.io/badge/status-production--ready-success?style=flat-square)
 
@@ -43,8 +43,9 @@ O sistema opera em duas camadas complementares:
 
 | Camada | Tecnologia | Responsabilidade |
 | --- | --- | --- |
-| **Backend** | FastAPI + HTTPX (async) | Roteamento, validação, fallback e serialização |
-| **Frontend** | HTML5 + CSS3 + Vanilla JS | Interface web integrada, sem dependências externas |
+| **Backend** | FastAPI + HTTPX + Redis | Roteamento, fallback, resiliência (Circuit Breaker) e cache |
+| **Frontend Web** | HTML5 + CSS3 + Vanilla JS | Interface premium PWA, mapas e internacionalização |
+| **Frontend Mobile** | Flet (Python/Flutter) | App multiplataforma (Android/iOS) com cache local |
 
 ### Motor de Fallback Duplo
 
@@ -75,6 +76,15 @@ Requisição do Usuário
 
 ## 🚀 Funcionalidades
 
+### Infraestrutura e Segurança (Novo na v2.0)
+
+- **Circuit Breaker Pattern**: Utilização da biblioteca `pybreaker` para identificar falhas repetidas em provedores e poupar chamadas em massa, redirecionando o tráfego para fallbacks ou respostas instantâneas de erro.
+- **Camada de Cache (Redis & TTLCache)**:
+  - No Backend: O Redis (via `redis.asyncio`) absorve chamadas repetidas, salvando requisições idênticas para a resposta na casa dos milissegundos.
+  - No Mobile: O `cachetools.TTLCache` assegura que o app não chame a API em buscas locais repetidas.
+- **Segurança (API Key)**: Todos os endpoints estão protegidos por um Middleware `X-API-KEY`. Tanto o Frontend Web quanto o Mobile injetam esse cabeçalho seguro automaticamente nas requisições.
+- **Log Rotativo**: Logs consistentes salvos em `cep_api.log` e `cep_app.log` diariamente, guardando um histórico local por 30 dias sob fuso horário oficial do Brasil (BRT).
+
 ### Backend
 
 - **Requisições 100% Assíncronas**: Todo o stack de HTTP utiliza `httpx` com `async/await`, garantindo throughput máximo no Event Loop do FastAPI sem bloqueios.
@@ -91,14 +101,14 @@ Requisição do Usuário
 | 🇹🇼 Taiwan | Prefixo regional de 3 dígitos | `115008` → `115` |
 | 🇭🇰 Hong Kong | Placeholder logístico `999077` | Interceptado e mapeado |
 
-### Frontend
+### Frontend (Web & Mobile)
 
-- **Progressive Web App (PWA):** Instalação nativa em Desktop/Mobile com Service Workers e ícone dedicado (`app_icon.png`).
-- **Identidade Visual:** Logo de alta resolução integrado fluidamente via CSS Blend Modes.
-- Interface **Dark Mode** premium servida diretamente pela própria API na rota `/`.
-- **Sistema de abas** Brasil / Internacional com título dinâmico.
-- **Dropdown customizado** com bandeiras de 197 países via FlagCDN, com **busca por teclado** com buffer de caracteres e normalização de acentos.
-- **Cartão de Endereço Visual**: parser inteligente que converte o JSON/XML bruto em uma leitura legível antes dos dados técnicos.
+- **Mapas Interativos Leaflet**: O sistema lê as coordenadas de buscas internacionais válidas (JSON/XML) e abre um minimapa dinâmico no Web e invoca Mapas Nativos via deep link no mobile (Flet).
+- **Internacionalização (i18n)**: Seletor de idioma nativo e customizado (PT, EN, ES) com ícones do FlagCDN adaptando toda a interface perfeitamente para clientes e redes de hotelaria globais.
+- **Mobile First via Flet**: App desenhado inteiramente com a engine Flutter em Python, idêntico à web, com pacote `.apk`/`.ipa` e fallback flexível.
+- **Progressive Web App (PWA)**: Instalação nativa em Desktop/Mobile com Service Workers e ícone dedicado (`app_icon.png`).
+- **Identidade Visual**: Logo de alta resolução integrado fluidamente via CSS Blend Modes e Dark Mode nativo.
+- **Dropdown customizado** com bandeiras de 197 países via FlagCDN.
 - **Copiar para Área de Transferência** com feedback visual animado.
 
 ---
@@ -176,10 +186,11 @@ GET /api/postal/{country}/{postal}
 
 | Versão | Data | Descrição |
 | :--- | :--- | :--- |
+| **v2.0.0** | Mai/2026 | Arquitetura resiliente (Circuit Breaker, Redis), Segurança X-API-KEY, i18n, Mapas Interativos e App Mobile Flet. |
 | **v1.1.0** | Mai/2026 | Suporte a PWA, refatoração de Layout (CSS Grid/Flexbox) e Identidade Visual (Novo Logo). |
 | **v1.0.0** | Mai/2026 | Lançamento oficial — Backend assíncrono, motor de fallback e interface Dark Mode. |
 
-> Veja as notas completas da versão atual em [RELEASE_NOTES_v1.1.0.md](RELEASE_NOTES_v1.1.0.md).
+> Veja as notas completas da versão atual em [RELEASE_NOTES_v2.0.0.md](RELEASE_NOTES_v2.0.0.md).
 
 ---
 
