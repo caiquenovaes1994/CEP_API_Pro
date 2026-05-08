@@ -1,6 +1,5 @@
 import flet as ft
 import httpx
-import asyncio
 import json
 from cachetools import TTLCache
 import pybreaker
@@ -78,7 +77,6 @@ async def _perform_request(url, is_br, val, fmt):
                 raise ValueError("API offline e fallback não suportado para internacional.")
 
 # --- Configurações de Design (Alinhadas com o Web Pro) ---
-PRIMARY_GRADIENT = ["#818cf8", "#c084fc"]
 PRIMARY_COLOR = "#6366f1"
 BG_COLOR = "#0f172a"
 SURFACE_COLOR = "#1e293b"

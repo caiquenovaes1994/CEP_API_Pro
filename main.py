@@ -4,7 +4,6 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import httpx
 import xml.etree.ElementTree as ET
-import xml.dom.minidom
 from typing import Optional
 import logging
 from logging.handlers import TimedRotatingFileHandler

@@ -95,11 +95,11 @@ Requisição do Usuário
 
 | País | Regra Aplicada | Exemplo |
 | --- | --- | --- |
-| 🇬🇧 Reino Unido | Mantém apenas o *Outward Code* | `M16 0RA` → `M16` |
-| 🇨🇦 Canadá | Primeiros 3 caracteres | `A1A 1A1` → `A1A` |
-| 🇳🇱 Holanda | Primeiros 4 dígitos | `1012 AB` → `1012` |
-| 🇹🇼 Taiwan | Prefixo regional de 3 dígitos | `115008` → `115` |
-| 🇭🇰 Hong Kong | Placeholder logístico `999077` | Interceptado e mapeado |
+| ![Bandeira do Reino Unido](https://flagcdn.com/w20/gb.png) Reino Unido | Mantém apenas o *Outward Code* | `M16 0RA` → `M16` |
+| ![Bandeira do Canadá](https://flagcdn.com/w20/ca.png) Canadá | Primeiros 3 caracteres | `A1A 1A1` → `A1A` |
+| ![Bandeira da Holanda](https://flagcdn.com/w20/nl.png) Holanda | Primeiros 4 dígitos | `1012 AB` → `1012` |
+| ![Bandeira de Taiwan](https://flagcdn.com/w20/tw.png) Taiwan | Prefixo regional de 3 dígitos | `115008` → `115` |
+| ![Bandeira de Hong Kong](https://flagcdn.com/w20/hk.png) Hong Kong | Placeholder logístico `999077` | Interceptado e mapeado |
 
 ### Frontend (Web & Mobile)
 

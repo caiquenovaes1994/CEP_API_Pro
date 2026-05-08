@@ -1,3 +1,4 @@
 flet==0.84.0
 cachetools
 pybreaker
+httpx
