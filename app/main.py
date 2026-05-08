@@ -23,7 +23,7 @@ I18N = {
         "postal_label": "Digite o Postal Code",
         "btn_search": "Buscar Endereço",
         "address": "Endereço", "details": "Detalhes",
-        "raw_data": "Dados brutos:", "map": "Ver no Mapa",
+        "raw_data": "Dados brutos:",
     },
     "en": {
         "title_br": "Zip Code Search", "title_intl": "Search Postal Code",
@@ -33,7 +33,7 @@ I18N = {
         "postal_label": "Enter Postal Code",
         "btn_search": "Search Address",
         "address": "Address", "details": "Details",
-        "raw_data": "Raw data:", "map": "View on Map",
+        "raw_data": "Raw data:",
     },
     "es": {
         "title_br": "Búsqueda Postal", "title_intl": "Búsqueda Código Postal",
@@ -43,7 +43,7 @@ I18N = {
         "postal_label": "Ingrese el Código Postal",
         "btn_search": "Buscar Dirección",
         "address": "Dirección", "details": "Detalles",
-        "raw_data": "Datos sin procesar:", "map": "Ver en el Mapa",
+        "raw_data": "Datos sin procesar:",
     }
 }
 
@@ -297,8 +297,6 @@ class CEPApp:
         )
 
         # Resultados
-        self.map_btn = ft.ElevatedButton("Ver no Mapa", icon=ft.Icons.MAP, on_click=self.open_map, visible=False, bgcolor=PRIMARY_COLOR, color="white", height=35)
-
         self.result_card = ft.Container(
             content=ft.Column([
                 ft.Row([
@@ -307,8 +305,7 @@ class CEPApp:
                         ft.Text("Endereço", weight="bold", size=20, color=TEXT_MAIN, key="title"),
                         ft.Text("Detalhes", size=14, color=TEXT_MUTED, key="subtitle")
                     ], spacing=2, expand=True)
-                ]),
-                ft.Container(self.map_btn, alignment=ft.Alignment.CENTER)
+                ])
             ], spacing=10),
             bgcolor="rgba(99, 102, 241, 0.15)", border=ft.Border.all(1, "rgba(139, 92, 246, 0.3)"),
             padding=20, border_radius=15, visible=False,
@@ -330,7 +327,7 @@ class CEPApp:
 
         # Footer
         self.footer = ft.Column([
-            ft.Text("Desenvolvido por Caique Novaes | © 2026 | v1.1.0", size=12, color=TEXT_MAIN, weight="bold"),
+            ft.Text("Desenvolvido por Caique Novaes | © 2026 | v2.0.0", size=12, color=TEXT_MAIN, weight="bold"),
             ft.Text('"Simplificando a geolocalização global, um código postal de cada vez."', size=11, color=TEXT_MUTED, italic=True, text_align="center"),
             ft.Row([
                 ft.TextButton("GitHub", on_click=self.open_github),
@@ -385,12 +382,7 @@ class CEPApp:
         self.postal_input.label = t["postal_label"]
         self.search_btn.content.value = t["btn_search"]
         self.raw_container.content.controls[0].controls[0].value = t["raw_data"]
-        self.map_btn.text = t["map"]
         self.page.update()
-
-    async def open_map(self, e):
-        if hasattr(self, 'current_lat') and hasattr(self, 'current_lon'):
-            await self.page.launch_url(f"https://www.openstreetmap.org/?mlat={self.current_lat}&mlon={self.current_lon}#map=15/{self.current_lat}/{self.current_lon}")
 
     def change_tab(self, tab):
         self.current_tab = tab
@@ -492,7 +484,6 @@ class CEPApp:
     def display_results(self, data, fmt, is_br):
         self.result_card.visible = True
         self.raw_container.visible = True
-        self.map_btn.visible = False
         t = I18N[self.lang]
         
         addr_title = t["address"]
@@ -506,12 +497,6 @@ class CEPApp:
                 place = data.get("places", [{}])[0] if data.get("places") else {}
                 addr_title = place.get("place name", t["address"])
                 addr_subtitle = f"{place.get('state', '')}, {data.get('country', '')}"
-                lat = place.get('latitude')
-                lon = place.get('longitude')
-                if lat and lon:
-                    self.current_lat = lat
-                    self.current_lon = lon
-                    self.map_btn.visible = True
             raw = json.dumps(data, indent=2, ensure_ascii=False)
         else:
             try:
@@ -527,14 +512,8 @@ class CEPApp:
                     place_name = root.findtext('.//place_name', '')
                     state = root.findtext('.//state', '')
                     country = root.findtext('.//country', '')
-                    lat = root.findtext('.//latitude')
-                    lon = root.findtext('.//longitude')
                     addr_title = place_name if place_name else t["address"]
                     addr_subtitle = f"{state}, {country}"
-                    if lat and lon:
-                        self.current_lat = lat
-                        self.current_lon = lon
-                        self.map_btn.visible = True
             except Exception:
                 addr_title = "XML"
             raw = data

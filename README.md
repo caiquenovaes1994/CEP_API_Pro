@@ -44,7 +44,7 @@ O sistema opera em duas camadas complementares:
 | Camada | Tecnologia | Responsabilidade |
 | --- | --- | --- |
 | **Backend** | FastAPI + HTTPX + Redis | Roteamento, fallback, resiliência (Circuit Breaker) e cache |
-| **Frontend Web** | HTML5 + CSS3 + Vanilla JS | Interface premium PWA, mapas e internacionalização |
+| **Frontend Web** | HTML5 + CSS3 + Vanilla JS | Interface premium PWA e internacionalização |
 | **Frontend Mobile** | Flet (Python/Flutter) | App multiplataforma (Android/iOS) com cache local |
 
 ### Motor de Fallback Duplo
@@ -103,7 +103,6 @@ Requisição do Usuário
 
 ### Frontend (Web & Mobile)
 
-- **Mapas Interativos Leaflet**: O sistema lê as coordenadas de buscas internacionais válidas (JSON/XML) e abre um minimapa dinâmico no Web e invoca Mapas Nativos via deep link no mobile (Flet).
 - **Internacionalização (i18n)**: Seletor de idioma nativo e customizado (PT, EN, ES) com ícones do FlagCDN adaptando toda a interface perfeitamente para clientes e redes de hotelaria globais.
 - **Mobile First via Flet**: App desenhado inteiramente com a engine Flutter em Python, idêntico à web, com pacote `.apk`/`.ipa` e fallback flexível.
 - **Progressive Web App (PWA)**: Instalação nativa em Desktop/Mobile com Service Workers e ícone dedicado (`app_icon.png`).
@@ -186,7 +185,7 @@ GET /api/postal/{country}/{postal}
 
 | Versão | Data | Descrição |
 | :--- | :--- | :--- |
-| **v2.0.0** | Mai/2026 | Arquitetura resiliente (Circuit Breaker, Redis), Segurança X-API-KEY, i18n, Mapas Interativos e App Mobile Flet. |
+| **v2.0.0** | Mai/2026 | Arquitetura resiliente (Circuit Breaker, Redis), Segurança X-API-KEY, i18n e App Mobile Flet. |
 | **v1.1.0** | Mai/2026 | Suporte a PWA, refatoração de Layout (CSS Grid/Flexbox) e Identidade Visual (Novo Logo). |
 | **v1.0.0** | Mai/2026 | Lançamento oficial — Backend assíncrono, motor de fallback e interface Dark Mode. |
 

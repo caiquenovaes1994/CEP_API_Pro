@@ -9,11 +9,10 @@
     <link rel="manifest" href="/static/manifest.json">
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/static/app_icon.png">
     
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
@@ -522,16 +521,6 @@
             mix-blend-mode: screen;
         }
 
-        #map {
-            height: 200px;
-            width: 100%;
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-            display: none;
-            z-index: 1;
-            border: 1px solid var(--surface-border);
-        }
-
         .lang-selector {
             position: absolute;
             top: 1rem;
@@ -672,8 +661,6 @@
                 </div>
             </div>
 
-            <div id="map"></div>
-
             <div class="result-header">
                 <h3 id="result-format-title">Dados brutos:</h3>
                 <button class="copy-btn" id="copy-btn">
@@ -691,7 +678,7 @@
     </div>
     
     <footer class="footer">
-        <p>Desenvolvido por <strong>Caique Novaes</strong> | &copy; 2026 | v1.1.0</p>
+        <p>Desenvolvido por <strong>Caique Novaes</strong> | &copy; 2026 | v2.0.0</p>
         <p style="margin: 0.5rem 0; font-style: italic; opacity: 0.8;">"Simplificando a geolocalização global, um código postal de cada vez."</p>
         <p style="margin-top: 0.8rem;">
             <a href="https://github.com/caiquenovaes1994/" target="_blank" rel="noopener noreferrer">GitHub</a> | 
@@ -731,7 +718,7 @@
                 
                 // Change title dynamically
                 const mainTitle = document.getElementById('main-title');
-                const t = i18n[document.getElementById('lang-select').value];
+                const t = i18n[document.getElementById('current-lang-text').textContent.trim().toLowerCase()];
                 if (currentTab === 'br') {
                     mainTitle.textContent = t.title;
                 } else {
@@ -981,7 +968,7 @@
 
             // Reset Copy Button
             copyBtn.classList.remove('copied');
-            const t = i18n[document.getElementById('lang-select').value];
+            const t = i18n[document.getElementById('current-lang-text').textContent.trim().toLowerCase()];
             copyBtn.innerHTML = `
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -1079,7 +1066,6 @@
                                 else addressTitle = localidade || "Endereço encontrado";
                                 addressSubtitle = `${localidade ? localidade + ' - ' : ''}${uf} | CEP: ${cep}`;
                             }
-                            if (typeof hideMap === 'function') hideMap();
                         } else {
                             let lat, lon;
                             if (format === 'json') {
@@ -1105,11 +1091,6 @@
                                 
                                 addressTitle = place ? `${place}${state ? ', ' + state : ''}` : "Região encontrada";
                                 addressSubtitle = `${country} | Postal Code: ${postal}`;
-                            }
-                            if (lat && lon && typeof showMap === 'function') {
-                                showMap(lat, lon);
-                            } else if (typeof hideMap === 'function') {
-                                hideMap();
                             }
                         }
                         
@@ -1249,33 +1230,6 @@
             }
         });
 
-        // Map setup
-        let map = null;
-        let marker = null;
-
-        function showMap(lat, lon) {
-            const mapDiv = document.getElementById('map');
-            mapDiv.style.display = 'block';
-            
-            if (!map) {
-                map = L.map('map').setView([lat, lon], 13);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
-                    attribution: '© OpenStreetMap'
-                }).addTo(map);
-                marker = L.marker([lat, lon]).addTo(map);
-            } else {
-                map.setView([lat, lon], 13);
-                marker.setLatLng([lat, lon]);
-            }
-            
-            setTimeout(() => { map.invalidateSize(); }, 100);
-        }
-
-        function hideMap() {
-            document.getElementById('map').style.display = 'none';
-        }
     </script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </body>
 </html>
