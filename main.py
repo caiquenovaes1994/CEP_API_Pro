@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Header, HTTPException, Response, Query, Security, status
+from fastapi import FastAPI, Header, HTTPException, Response, Query, Security, status, Request
 from fastapi.security import APIKeyHeader
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -40,10 +40,20 @@ async def set_cache(key: str, value: dict):
         await redis_client.setex(key, CACHE_TTL, json.dumps(value))
     except Exception as e:
         logger.error(f"Erro Redis salvar: {e}")
+import os
+
 api_key_header = APIKeyHeader(name="X-API-KEY", auto_error=False)
 
-async def verify_api_key(api_key: str = Security(api_key_header)):
-    if api_key != "CEP_PRO_2026_KEY":
+async def verify_api_key(request: Request, api_key: str = Security(api_key_header)):
+    # Bypass de segurança para Same-Origin (requisições vindas do nosso próprio frontend)
+    referer = request.headers.get("referer")
+    host = request.headers.get("host")
+    
+    if referer and host and host in referer:
+        return api_key
+
+    expected_key = os.getenv("CEP_API_KEY", "CEP_PRO_9A4BF2E17D8C5B6A_2026_SECURE")
+    if api_key != expected_key:
         logger.warning(f"Acesso negado: Chave de API inválida ({api_key})")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

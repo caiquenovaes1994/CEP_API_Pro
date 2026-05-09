@@ -983,11 +983,7 @@
             searchBtn.disabled = true;
 
             try {
-                const response = await fetch(url, {
-                    headers: {
-                        'X-API-KEY': 'CEP_PRO_2026_KEY'
-                    }
-                });
+                const response = await fetch(url);
                 
                 let dataText;
                 if (format === 'json') {

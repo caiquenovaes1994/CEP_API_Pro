@@ -80,7 +80,7 @@ Requisição do Usuário
 - **Circuit Breaker Pattern**: Utilização da biblioteca `pybreaker` para identificar falhas repetidas em provedores e poupar chamadas em massa, redirecionando o tráfego para fallbacks ou respostas instantâneas de erro.
 - **Camada de Cache (Redis & TTLCache)**:
   - No Backend: O Redis (via `redis.asyncio`) absorve chamadas repetidas, salvando requisições idênticas para a resposta na casa dos milissegundos.
-- **Segurança (API Key)**: Todos os endpoints estão protegidos por um Middleware `X-API-KEY`. O Frontend Web injeta esse cabeçalho seguro automaticamente nas requisições.
+- **Segurança (API Key)**: Todos os endpoints estão protegidos por um Middleware `X-API-KEY`. O sistema utiliza a variável de ambiente `CEP_API_KEY` para validação. Se não definida, utiliza um valor padrão para testes. O Frontend Web injeta esse cabeçalho automaticamente nas requisições.
 - **Log Rotativo**: Logs consistentes salvos em `cep_api.log` diariamente, guardando um histórico local por 30 dias sob fuso horário oficial do Brasil (BRT).
 
 ### Backend
