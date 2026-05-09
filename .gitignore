@@ -1,7 +1,5 @@
 .venv/
 __pycache__/
 *.pyc
-app_build.txt
 cep_api.log
 cep_app.log
-app/build/
