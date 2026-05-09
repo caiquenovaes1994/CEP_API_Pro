@@ -28,22 +28,12 @@ Para garantir alta disponibilidade em ambientes de produção e lidar com instab
 - **Integração Web com Leaflet.js**: Quando um Postal Code internacional válido é encontrado, o cliente Web agora processa as coordenadas (Latitude/Longitude) e renderiza um mapa dinâmico de alta resolução logo abaixo do resultado, sem bloquear a UI principal.
 - **Internacionalização (i18n)**: Suporte dinâmico e integrado para **Português (PT)**, **Inglês (EN)** e **Espanhol (ES)**. Um novo seletor reativo (livre de conflitos de emoji no Windows Chrome) adapta as tags, botões e placeholders para clientes no mundo todo, ideal para o setor hoteleiro global.
 
-### 📱 4. Aplicativo Nativo Cross-Platform (Flet)
-
-Levamos o frontend PWA a um novo patamar lançando um aplicativo compilável para Android e iOS através do SDK Flet (Flutter via Python) na pasta `/app`.
-
-- **Interface Multiplataforma**: Paridade total de design Premium e Dark Mode com o Web App.
-- **Resiliência Espelhada**: O App possui o próprio mecanismo de **Circuit Breaker** local e um sistema de **Cache (TTLCache)** em memória. Mesmo que a rede oscile, buscas repetidas são processadas instantaneamente offline.
-- **Deep Links Geográficos**: Em vez de engessar o app com mapas WebView pesados, o botão "Ver no Mapa" aciona a intent nativa do aparelho, abrindo a coordenada perfeitamente.
-- **i18n Nativo**: Seletor `PopupMenuButton` integrado diretamente na AppBar, re-renderizando a árvore de componentes sem necessidade de reinicialização.
-
 ---
 
 ## 🔧 Aspectos Técnicos
 
 - **FastAPI**: Mantido o assincronismo em 100% das chamadas HTTP.
 - **Novas Dependências Web**: `redis`, `pybreaker`
-- **Novas Dependências App**: `flet`, `cachetools`, `pybreaker`
 - **Integração FlagCDN**: A renderização das bandeiras foi uniformizada usando arquivos SVG estáticos otimizados do `flagcdn.com`, solucionando o bug histórico de renderização de *Emojis de Bandeira* em sistemas Windows (Chromium/Edge).
 
 ---

@@ -45,7 +45,6 @@ O sistema opera em duas camadas complementares:
 | --- | --- | --- |
 | **Backend** | FastAPI + HTTPX + Redis | Roteamento, fallback, resiliência (Circuit Breaker) e cache |
 | **Frontend Web** | HTML5 + CSS3 + Vanilla JS | Interface premium PWA e internacionalização |
-| **Frontend Mobile** | Flet (Python/Flutter) | App multiplataforma (Android/iOS) com cache local |
 
 ### Motor de Fallback Duplo
 
@@ -81,9 +80,8 @@ Requisição do Usuário
 - **Circuit Breaker Pattern**: Utilização da biblioteca `pybreaker` para identificar falhas repetidas em provedores e poupar chamadas em massa, redirecionando o tráfego para fallbacks ou respostas instantâneas de erro.
 - **Camada de Cache (Redis & TTLCache)**:
   - No Backend: O Redis (via `redis.asyncio`) absorve chamadas repetidas, salvando requisições idênticas para a resposta na casa dos milissegundos.
-  - No Mobile: O `cachetools.TTLCache` assegura que o app não chame a API em buscas locais repetidas.
-- **Segurança (API Key)**: Todos os endpoints estão protegidos por um Middleware `X-API-KEY`. Tanto o Frontend Web quanto o Mobile injetam esse cabeçalho seguro automaticamente nas requisições.
-- **Log Rotativo**: Logs consistentes salvos em `cep_api.log` e `cep_app.log` diariamente, guardando um histórico local por 30 dias sob fuso horário oficial do Brasil (BRT).
+- **Segurança (API Key)**: Todos os endpoints estão protegidos por um Middleware `X-API-KEY`. O Frontend Web injeta esse cabeçalho seguro automaticamente nas requisições.
+- **Log Rotativo**: Logs consistentes salvos em `cep_api.log` diariamente, guardando um histórico local por 30 dias sob fuso horário oficial do Brasil (BRT).
 
 ### Backend
 
@@ -101,10 +99,9 @@ Requisição do Usuário
 | ![Bandeira de Taiwan](https://flagcdn.com/w20/tw.png) Taiwan | Prefixo regional de 3 dígitos | `115008` → `115` |
 | ![Bandeira de Hong Kong](https://flagcdn.com/w20/hk.png) Hong Kong | Placeholder logístico `999077` | Interceptado e mapeado |
 
-### Frontend (Web & Mobile)
+### Frontend Web
 
 - **Internacionalização (i18n)**: Seletor de idioma nativo e customizado (PT, EN, ES) com ícones do FlagCDN adaptando toda a interface perfeitamente para clientes e redes de hotelaria globais.
-- **Mobile First via Flet**: App desenhado inteiramente com a engine Flutter em Python, idêntico à web, com pacote `.apk`/`.ipa` e fallback flexível.
 - **Progressive Web App (PWA)**: Instalação nativa em Desktop/Mobile com Service Workers e ícone dedicado (`app_icon.png`).
 - **Identidade Visual**: Logo de alta resolução integrado fluidamente via CSS Blend Modes e Dark Mode nativo.
 - **Dropdown customizado** com bandeiras de 197 países via FlagCDN.
@@ -185,7 +182,7 @@ GET /api/postal/{country}/{postal}
 
 | Versão | Data | Descrição |
 | :--- | :--- | :--- |
-| **v2.0.0** | Mai/2026 | Arquitetura resiliente (Circuit Breaker, Redis), Segurança X-API-KEY, i18n e App Mobile Flet. |
+| **v2.0.0** | Mai/2026 | Arquitetura resiliente (Circuit Breaker, Redis), Segurança X-API-KEY e i18n. |
 | **v1.1.0** | Mai/2026 | Suporte a PWA, refatoração de Layout (CSS Grid/Flexbox) e Identidade Visual (Novo Logo). |
 | **v1.0.0** | Mai/2026 | Lançamento oficial — Backend assíncrono, motor de fallback e interface Dark Mode. |
 

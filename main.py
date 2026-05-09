@@ -158,7 +158,7 @@ async def _zippopotamus_request(country: str, postal: str) -> dict:
 @api_breaker
 async def _nominatim_request(country: str, postal: str) -> dict:
     headers = {
-        "User-Agent": "CEP_API_Pro_App/1.0",
+        "User-Agent": "CEP_API_Pro/1.0",
         "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8"
     }
     nominatim_url = f"https://nominatim.openstreetmap.org/search?postalcode={postal}&country={country}&format=json"
