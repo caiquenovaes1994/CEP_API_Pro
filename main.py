@@ -72,6 +72,11 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 def read_root():
     return FileResponse("static/index.html")
 
+@app.get("/favicon.ico", include_in_schema=False)
+@app.get("/favicon.png", include_in_schema=False)
+async def favicon():
+    return FileResponse("static/favicon.png")
+
 @api_breaker
 async def _viacep_request(cep_limpo: str) -> dict:
     async with httpx.AsyncClient() as client:
