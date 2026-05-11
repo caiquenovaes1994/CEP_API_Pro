@@ -624,10 +624,10 @@
 
         <div class="tab-content" id="tab-intl">
             <div class="input-group">
-                <label for="country">Selecione o País</label>
+                <label for="intl-country-trigger">Selecione o País</label>
                 <div class="custom-select-wrapper">
                     <div class="custom-select" id="custom-country-select">
-                        <div class="custom-select-trigger" tabindex="0">
+                        <div class="custom-select-trigger" id="intl-country-trigger" tabindex="0">
                             <div class="selected-country">
                                 <img src="https://flagcdn.com/w40/us.png" alt="EUA">
                                 <span>Estados Unidos</span>
@@ -714,6 +714,9 @@
         const tabContents = document.querySelectorAll('.tab-content');
 
         let currentTab = 'br';
+        let lastFetchedData = null;
+        let lastFetchedFormat = 'json';
+
 
         // Tab Switching
         tabBtns.forEach(btn => {
@@ -929,7 +932,9 @@
 
         searchBtn.addEventListener('click', async () => {
             const format = document.querySelector('input[name="format"]:checked').value;
+            lastFetchedFormat = format;
             let url = '';
+
 
             // Atualizar o título do formato dinamicamente
             document.getElementById('result-format-title').textContent = `Dados em ${format.toUpperCase()}:`;
@@ -1047,71 +1052,53 @@
                     globalError.textContent = errMsg;
                     globalError.style.display = 'block';
                 } else {
+                    // Armazenar os dados para troca instantânea
+                    if (format === 'json') {
+                        lastFetchedData = JSON.parse(dataText);
+                    } else {
+                        // Se for XML, tenta converter para objeto para possibilitar troca para JSON
+                        try {
+                            const parser = new DOMParser();
+                            const xmlDoc = parser.parseFromString(dataText, "text/xml");
+                            const obj = {};
+                            const root = xmlDoc.documentElement;
+                            
+                            const xmlToObj = (node) => {
+                                const res = {};
+                                for (let child of node.children) {
+                                    if (child.children.length > 0) {
+                                        // Caso especial para lista de 'places'
+                                        if (child.tagName === 'places' || child.tagName === 'places_list') {
+                                            if (!res['places']) res['places'] = [];
+                                            res['places'].push(xmlToObj(child));
+                                        } else {
+                                            res[child.tagName] = xmlToObj(child);
+                                        }
+                                    } else {
+                                        res[child.tagName] = child.textContent;
+                                    }
+                                }
+                                return res;
+                            };
+                            
+                            const converted = xmlToObj(root);
+                            // Ajuste para campos que mudam de nome entre JSON e XML se necessário
+                            if (root.tagName === 'resultado' && !converted.cep && converted.post_code) {
+                                // Internacional
+                            }
+                            lastFetchedData = converted;
+                        } catch(e) {
+                            console.error("Erro ao processar cache XML:", e);
+                        }
+                    }
+
                     resultOutput.textContent = dataText;
                     
                     // Extrair e exibir o endereço formatado
-                    let addressTitle = "Endereço encontrado";
-                    let addressSubtitle = "Detalhes abaixo";
-                    
-                    try {
-                        if (currentTab === 'br') {
-                            if (format === 'json') {
-                                const obj = JSON.parse(dataText);
-                                if (obj.logradouro) addressTitle = `${obj.logradouro}${obj.bairro ? ' - ' + obj.bairro : ''}`;
-                                else addressTitle = obj.localidade || "Endereço encontrado";
-                                addressSubtitle = `${obj.localidade ? obj.localidade + ' - ' : ''}${obj.uf} | CEP: ${obj.cep}`;
-                            } else {
-                                const parser = new DOMParser();
-                                const xmlDoc = parser.parseFromString(dataText, "text/xml");
-                                const getTag = (tag) => xmlDoc.getElementsByTagName(tag)[0]?.textContent || "";
-                                
-                                const logradouro = getTag('logradouro');
-                                const bairro = getTag('bairro');
-                                const localidade = getTag('localidade');
-                                const uf = getTag('uf');
-                                const cep = getTag('cep');
-                                
-                                if (logradouro) addressTitle = `${logradouro}${bairro ? ' - ' + bairro : ''}`;
-                                else addressTitle = localidade || "Endereço encontrado";
-                                addressSubtitle = `${localidade ? localidade + ' - ' : ''}${uf} | CEP: ${cep}`;
-                            }
-                        } else {
-                            let lat, lon;
-                            if (format === 'json') {
-                                const obj = JSON.parse(dataText);
-                                const place = obj.places && obj.places.length > 0 ? obj.places[0]['place name'] : '';
-                                const state = obj.places && obj.places.length > 0 ? obj.places[0]['state'] : '';
-                                lat = obj.places && obj.places.length > 0 ? obj.places[0]['latitude'] : '';
-                                lon = obj.places && obj.places.length > 0 ? obj.places[0]['longitude'] : '';
-                                
-                                addressTitle = place ? `${place}${state ? ', ' + state : ''}` : "Região encontrada";
-                                addressSubtitle = `${obj.country} | Postal Code: ${obj['post code']}`;
-                            } else {
-                                const parser = new DOMParser();
-                                const xmlDoc = parser.parseFromString(dataText, "text/xml");
-                                const getTag = (tag) => xmlDoc.getElementsByTagName(tag)[0]?.textContent || "";
-                                
-                                const place = getTag('place_name');
-                                const state = getTag('state');
-                                const country = getTag('country');
-                                const postal = getTag('post_code');
-                                lat = getTag('latitude');
-                                lon = getTag('longitude');
-                                
-                                addressTitle = place ? `${place}${state ? ', ' + state : ''}` : "Região encontrada";
-                                addressSubtitle = `${country} | Postal Code: ${postal}`;
-                            }
-                        }
-                        
-                        document.getElementById('address-title').textContent = addressTitle;
-                        document.getElementById('address-subtitle').textContent = addressSubtitle;
-                        document.getElementById('formatted-address').style.display = 'flex';
-                    } catch(e) {
-                        document.getElementById('formatted-address').style.display = 'none';
-                    }
-
+                    updateFormattedAddress(lastFetchedData, currentTab);
                     resultContainer.style.display = 'block';
                 }
+
 
             } catch (error) {
                 globalError.textContent = 'Erro de rede ou servidor inacessível.';
@@ -1122,6 +1109,87 @@
                 searchBtn.disabled = false;
             }
         });
+
+        // Função para atualizar a visualização sem nova requisição
+        function updateFormattedAddress(obj, tab) {
+            if (!obj) return;
+            let addressTitle = "Endereço encontrado";
+            let addressSubtitle = "Detalhes abaixo";
+
+            try {
+                if (tab === 'br') {
+                    // Normalização básica caso venha de XML
+                    const logradouro = obj.logradouro || "";
+                    const bairro = obj.bairro || "";
+                    const localidade = obj.localidade || "";
+                    const uf = obj.uf || "";
+                    const cep = obj.cep || "";
+
+                    if (logradouro) addressTitle = `${logradouro}${bairro ? ' - ' + bairro : ''}`;
+                    else addressTitle = localidade || "Endereço encontrado";
+                    addressSubtitle = `${localidade ? localidade + ' - ' : ''}${uf} | CEP: ${cep}`;
+                } else {
+                    const place = obj.places && obj.places.length > 0 ? (obj.places[0]['place name'] || obj.places[0]['place_name']) : (obj.place_name || '');
+                    const state = obj.places && obj.places.length > 0 ? (obj.places[0]['state'] || obj.places[0]['state']) : (obj.state || '');
+                    const country = obj.country || "";
+                    const postal = obj['post code'] || obj['post_code'] || "";
+
+                    addressTitle = place ? `${place}${state ? ', ' + state : ''}` : "Região encontrada";
+                    addressSubtitle = `${country} | Postal Code: ${postal}`;
+                }
+
+                document.getElementById('address-title').textContent = addressTitle;
+                document.getElementById('address-subtitle').textContent = addressSubtitle;
+                document.getElementById('formatted-address').style.display = 'flex';
+            } catch (e) {
+                console.error("Erro ao formatar endereço:", e);
+                document.getElementById('formatted-address').style.display = 'none';
+            }
+        }
+
+        function jsonToXml(obj, tab) {
+            const root = tab === 'br' ? 'endereco' : 'resultado';
+            let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<${root}>\n`;
+            
+            const buildXml = (data, indent = "  ") => {
+                let s = "";
+                for (const key in data) {
+                    const tag = key.replace(/\s+/g, '_');
+                    const val = data[key];
+                    if (Array.isArray(val)) {
+                        val.forEach(item => {
+                            s += `${indent}<${tag}>\n${buildXml(item, indent + "  ")}${indent}</${tag}>\n`;
+                        });
+                    } else if (typeof val === 'object' && val !== null) {
+                        s += `${indent}<${tag}>\n${buildXml(val, indent + "  ")}${indent}</${tag}>\n`;
+                    } else {
+                        s += `${indent}<${tag}>${val !== null ? val : ""}</${tag}>\n`;
+                    }
+                }
+                return s;
+            };
+
+            xml += buildXml(obj);
+            xml += `</${root}>`;
+            return xml;
+        }
+
+        // Ouvinte para troca de formato instantânea
+        document.querySelectorAll('input[name="format"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (!lastFetchedData) return;
+                
+                const format = radio.value;
+                document.getElementById('result-format-title').textContent = `Dados em ${format.toUpperCase()}:`;
+                
+                if (format === 'json') {
+                    resultOutput.textContent = JSON.stringify(lastFetchedData, null, 4);
+                } else {
+                    resultOutput.textContent = jsonToXml(lastFetchedData, currentTab);
+                }
+            });
+        });
+
 
         copyBtn.addEventListener('click', async () => {
             try {

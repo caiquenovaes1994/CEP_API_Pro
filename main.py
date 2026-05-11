@@ -11,40 +11,162 @@ import datetime
 import pybreaker
 import redis.asyncio as redis
 import json
+import shutil
+import os
+
+
 
 class BRTFormatter(logging.Formatter):
     def converter(self, timestamp):
         dt = datetime.datetime.fromtimestamp(timestamp, datetime.timezone.utc)
         return (dt - datetime.timedelta(hours=3)).timetuple()
 
+# Configuração de logs diretamente em arquivos datados (sem arquivo base independente)
+LOG_DIR = "logs"
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+
+# Define o nome do arquivo com a data de hoje no formato solicitado: cep_api_AAAA-MM-DD.log
+today_date = (datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=3)).strftime("%Y-%m-%d")
+log_filename = os.path.join(LOG_DIR, f"cep_api_{today_date}.log")
+
+
+# Limpa ABSOLUTAMENTE todos os handlers existentes para evitar arquivos fantasmas e duplicidade
+for name in logging.root.manager.loggerDict:
+    logging.getLogger(name).handlers = []
+logging.getLogger().handlers = []
+
 logger = logging.getLogger("cep_api")
 logger.setLevel(logging.INFO)
-handler = TimedRotatingFileHandler("cep_api.log", when="midnight", interval=1, backupCount=30, encoding="utf-8")
+
+# Handler direto para o arquivo datado
+handler = logging.FileHandler(log_filename, encoding="utf-8")
 handler.setFormatter(BRTFormatter('%(asctime)s - %(levelname)s - %(message)s'))
 logger.addHandler(handler)
 
-api_breaker = pybreaker.CircuitBreaker(fail_max=5, reset_timeout=60)
-redis_client = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True, socket_connect_timeout=1, socket_timeout=1)
+logger.info(f"Sistema de logs iniciado. Gravando diretamente em: {log_filename}")
+
+
+
+# Força a remoção de qualquer arquivo genérico residual na pasta logs
+legacy_log = os.path.join(LOG_DIR, "cep_api.log")
+if os.path.exists(legacy_log):
+    try:
+        # Se o arquivo estiver vazio ou for o resíduo indesejado, tenta apagar
+        os.remove(legacy_log)
+    except:
+        # Se estiver em uso, o sistema apenas ignora (provável log de acesso do uvicorn)
+        pass
+
+
+# Lógica de retenção: Remove arquivos com mais de 30 dias
+try:
+    now = datetime.datetime.now()
+    for f in os.listdir(LOG_DIR):
+        if f.startswith("cep_api_") and f.endswith(".log"):
+            f_path = os.path.join(LOG_DIR, f)
+            f_mtime = datetime.datetime.fromtimestamp(os.path.getmtime(f_path))
+            if (now - f_mtime).days > 30:
+                os.remove(f_path)
+except Exception as e:
+
+    # Erro na limpeza não deve travar a API
+    pass
+
+
+
+# Configuração de Circuit Breakers independentes para cada serviço
+viacep_breaker = pybreaker.CircuitBreaker(fail_max=5, reset_timeout=60)
+brasilapi_breaker = pybreaker.CircuitBreaker(fail_max=5, reset_timeout=60)
+zippopotamus_breaker = pybreaker.CircuitBreaker(fail_max=5, reset_timeout=60)
+nominatim_breaker = pybreaker.CircuitBreaker(fail_max=5, reset_timeout=60)
+
+# Redis com timeout agressivo para não travar a API se o cache estiver offline
+redis_client = redis.Redis(
+    host='localhost', 
+    port=6379, 
+    db=0, 
+    decode_responses=True, 
+    socket_connect_timeout=0.1, # 100ms
+    socket_timeout=0.1          # 100ms
+)
+redis_available = True
+
 CACHE_TTL = 2592000
 
 async def get_cache(key: str):
+    global redis_available
+    if not redis_available: return None
     try:
         data = await redis_client.get(key)
         if data: return json.loads(data)
     except Exception as e:
-        logger.error(f"Erro Redis ler: {e}")
+        logger.error(f"Erro Redis ler: {e}. Desativando cache temporariamente.")
+        redis_available = False
     return None
 
 async def set_cache(key: str, value: dict):
+    global redis_available
+    if not redis_available: return
     try:
         await redis_client.setex(key, CACHE_TTL, json.dumps(value))
     except Exception as e:
-        logger.error(f"Erro Redis salvar: {e}")
-import os
+        logger.error(f"Erro Redis salvar: {e}. Desativando cache temporariamente.")
+        redis_available = False
+
+# Mapeamento completo de países para logs e respostas precisas
+
+COUNTRY_NAMES = {
+    "af": "Afeganistão", "za": "África do Sul", "al": "Albânia", "de": "Alemanha", "ad": "Andorra", 
+    "ao": "Angola", "ag": "Antígua e Barbuda", "sa": "Arábia Saudita", "dz": "Argélia", "ar": "Argentina", 
+    "am": "Armênia", "au": "Austrália", "at": "Áustria", "az": "Azerbaijão", "bs": "Bahamas", 
+    "bh": "Bahrein", "bd": "Bangladesh", "bb": "Barbados", "be": "Bélgica", "bz": "Belize", 
+    "bj": "Benim", "by": "Bielorrússia", "bo": "Bolívia", "ba": "Bósnia e Herzegovina", "bw": "Botsuana", 
+    "br": "Brasil", "bn": "Brunei", "bg": "Bulgária", "bf": "Burquina Faso", "bi": "Burundi", 
+    "bt": "Butão", "cv": "Cabo Verde", "cm": "Camarões", "kh": "Camboja", "ca": "Canadá", 
+    "qa": "Catar", "kz": "Cazaquistão", "td": "Chade", "cl": "Chile", "cn": "China", 
+    "cy": "Chipre", "co": "Colômbia", "km": "Comores", "cg": "Congo", "cd": "Congo (Rep. Dem.)", 
+    "kp": "Coreia do Norte", "kr": "Coreia do Sul", "ci": "Costa do Marfim", "cr": "Costa Rica", "hr": "Croácia", 
+    "cu": "Cuba", "dk": "Dinamarca", "dj": "Djibuti", "dm": "Dominica", "eg": "Egito", 
+    "sv": "El Salvador", "ae": "Emirados Árabes Unidos", "ec": "Equador", "er": "Eritreia", "sk": "Eslováquia", 
+    "si": "Eslovênia", "es": "Espanha", "us": "Estados Unidos", "ee": "Estônia", "sz": "Eswatini", 
+    "et": "Etiópia", "fj": "Fiji", "ph": "Filipinas", "fi": "Finlândia", "fr": "França", 
+    "ga": "Gabão", "gm": "Gâmbia", "gh": "Gana", "ge": "Geórgia", "gd": "Granada", 
+    "gr": "Grécia", "gt": "Guatemala", "gy": "Guiana", "gn": "Guiné", "gq": "Guiné Equatorial", 
+    "gw": "Guiné-Bissau", "ht": "Haiti", "hn": "Honduras", "hk": "Hong Kong", "hu": "Hungria", 
+    "ye": "Iêmen", "mh": "Ilhas Marshall", "sb": "Ilhas Salomão", "in": "Índia", "id": "Indonésia", 
+    "ir": "Irã", "iq": "Iraque", "ie": "Irlanda", "is": "Islândia", "il": "Israel", 
+    "it": "Itália", "jm": "Jamaica", "jp": "Japão", "jo": "Jordânia", "ki": "Kiribati", 
+    "kw": "Kuwait", "ls": "Lesoto", "lv": "Letônia", "lb": "Líbano", "lr": "Libéria", 
+    "ly": "Líbia", "li": "Liechtenstein", "lt": "Lituânia", "lu": "Luxemburgo", "mk": "Macedônia do Norte", 
+    "mg": "Madagascar", "my": "Malásia", "mw": "Malaui", "mv": "Maldivas", "ml": "Mali", 
+    "mt": "Malta", "ma": "Marrocos", "mu": "Maurício", "mr": "Mauritânia", "mx": "México", 
+    "mm": "Mianmar", "fm": "Micronésia", "mz": "Moçambique", "md": "Moldávia", "mc": "Mônaco", 
+    "mn": "Mongólia", "me": "Montenegro", "na": "Namíbia", "nr": "Nauru", "np": "Nepal", 
+    "ni": "Nicarágua", "ne": "Níger", "ng": "Nigéria", "no": "Noruega", "nz": "Nova Zelândia", 
+    "om": "Omã", "nl": "Países Baixos", "pw": "Palau", "pa": "Panamá", "pg": "Papua-Nova Guiné", 
+    "pk": "Paquistão", "py": "Paraguai", "pe": "Peru", "pl": "Polônia", "pt": "Portugal", 
+    "ke": "Quênia", "kg": "Quirguistão", "gb": "Reino Unido", "cf": "República Centro-Africana", "do": "República Dominicana", 
+    "cz": "República Tcheca", "ro": "Romênia", "rw": "Ruanda", "ru": "Rússia", "ws": "Samoa", 
+    "sm": "San Marino", "lc": "Santa Lúcia", "kn": "São Cristóvão e Névis", "st": "São Tomé e Príncipe", "vc": "São Vicente e Granadinas", 
+    "sn": "Senegal", "sl": "Serra Leoa", "rs": "Sérvia", "sc": "Seychelles", "sg": "Singapura", 
+    "sy": "Síria", "so": "Somália", "lk": "Sri Lanka", "sd": "Sudão", "ss": "Sudão do Sul", 
+    "se": "Suécia", "ch": "Suíça", "sr": "Suriname", "th": "Tailândia", "tw": "Taiwan", 
+    "tj": "Tajiquistão", "tz": "Tanzânia", "tg": "Togo", "to": "Tonga", "tt": "Trinidad e Tobago", 
+    "tn": "Tunísia", "tm": "Turcomenistão", "tr": "Turquia", "tv": "Tuvalu", "ua": "Ucrânia", 
+    "ug": "Uganda", "uy": "Uruguai", "uz": "Uzbequistão", "vu": "Vanuatu", "va": "Vaticano", 
+    "ve": "Venezuela", "vn": "Vietnã", "zm": "Zâmbia", "zw": "Zimbábue"
+}
+
+
+def get_country_name(code: str) -> str:
+    return COUNTRY_NAMES.get(code.lower(), code.upper())
 
 api_key_header = APIKeyHeader(name="X-API-KEY", auto_error=False)
 
 async def verify_api_key(request: Request, api_key: str = Security(api_key_header)):
+
+
     # Bypass de segurança para Same-Origin (requisições vindas do nosso próprio frontend)
     referer = request.headers.get("referer")
     host = request.headers.get("host")
@@ -77,13 +199,45 @@ def read_root():
 async def favicon():
     return FileResponse("static/favicon.png")
 
-@api_breaker
+@brasilapi_breaker
+async def _brasilapi_request(cep_limpo: str) -> Optional[dict]:
+    """Tenta buscar o CEP via BrasilAPI (Geralmente mais rápido)."""
+    async with httpx.AsyncClient() as client:
+        try:
+            res = await client.get(f"https://brasilapi.com.br/api/cep/v1/{cep_limpo}", timeout=3.0)
+            if res.status_code == 200:
+                data = res.json()
+                # Normaliza para o formato esperado pelo frontend (ViaCEP)
+                return {
+                    "cep": f"{data['cep'][:5]}-{data['cep'][5:]}" if "-" not in data['cep'] else data['cep'],
+                    "logradouro": data.get("street") or "",
+                    "complemento": "",
+                    "bairro": data.get("neighborhood") or "",
+                    "localidade": data.get("city") or "",
+                    "uf": data.get("state") or "",
+                    "ibge": "",
+                    "gia": "",
+                    "ddd": "",
+                    "siafi": "",
+                    "fonte": "brasilapi"
+                }
+        except Exception as e:
+            logger.error(f"Erro BrasilAPI: {e}")
+    return None
+
+@viacep_breaker
 async def _viacep_request(cep_limpo: str) -> dict:
+    """Tenta buscar o CEP via ViaCEP."""
     async with httpx.AsyncClient() as client:
         res = await client.get(f"https://viacep.com.br/ws/{cep_limpo}/json/", timeout=5.0)
     if res.status_code != 200:
-        raise ValueError("Erro de comunicação com o provedor de CEP.")
-    return res.json()
+        raise ValueError("Erro de comunicação com o provedor ViaCEP.")
+    data = res.json()
+    if data.get("erro"):
+        return data
+    data["fonte"] = "viacep"
+    return data
+
 
 async def fetch_cep(cep: str) -> dict:
     cep_limpo = "".join(filter(str.isdigit, cep))
@@ -95,15 +249,34 @@ async def fetch_cep(cep: str) -> dict:
     if cached_data:
         return cached_data
 
+    # 1. Tentativa Primária: BrasilAPI
+    try:
+        data = await _brasilapi_request(cep_limpo)
+        if data:
+            await set_cache(cache_key, data)
+            return data
+    except pybreaker.CircuitBreakerError:
+        logger.warning(f"Circuit Breaker ABERTO para BrasilAPI ao buscar CEP: {cep_limpo}")
+    except Exception as e:
+        logger.error(f"Falha na tentativa BrasilAPI para CEP {cep_limpo}: {e}")
+
+
+    # 2. Tentativa Secundária (Fallback): ViaCEP
     try:
         data = await _viacep_request(cep_limpo)
     except pybreaker.CircuitBreakerError:
-        logger.error("Circuit Breaker ABERTO para ViaCEP")
-        raise ValueError("Serviço temporariamente indisponível. Tente novamente mais tarde.")
+        logger.error(f"Circuit Breaker ABERTO para ViaCEP ao buscar CEP: {cep_limpo}")
+        raise ValueError(f"Serviços de CEP indisponíveis para o CEP {cep_limpo}. Tente novamente mais tarde.")
+    except Exception as e:
+        logger.error(f"Falha na tentativa ViaCEP para CEP {cep_limpo}: {e}")
+        raise ValueError(f"Erro ao obter dados para o CEP {cep_limpo} nos provedores.")
+
+
         
     if data.get("erro"):
-        logger.warning(f"CEP não encontrado/404: {cep_limpo}")
+        logger.warning(f"CEP não encontrado/404: {cep_limpo} (Brasil)")
         raise ValueError("CEP desativado ou não encontrado. Por favor, insira o CEP atualizado da rua.")
+
         
     await set_cache(cache_key, data)
     return data
@@ -140,6 +313,8 @@ async def buscar_cep(
     accept: Optional[str] = Header(None),
     api_key: str = Security(verify_api_key)
 ):
+    logger.info(f"Requisição CEP: {cep} | Formato: {formato or 'JSON'}")
+
     # Lógica para determinar se o usuário quer XML
     wants_xml = False
     if formato:
@@ -162,7 +337,7 @@ async def buscar_cep(
         
     return data
 
-@api_breaker
+@zippopotamus_breaker
 async def _zippopotamus_request(country: str, postal: str) -> dict:
     async with httpx.AsyncClient() as client:
         res = await client.get(f"http://api.zippopotam.us/{country}/{postal}", timeout=5.0)
@@ -170,7 +345,7 @@ async def _zippopotamus_request(country: str, postal: str) -> dict:
             return res.json()
     return None
 
-@api_breaker
+@nominatim_breaker
 async def _nominatim_request(country: str, postal: str) -> dict:
     headers = {
         "User-Agent": "CEP_API_Pro/1.0",
@@ -218,9 +393,10 @@ async def fetch_postal_internacional(country: str, postal: str) -> dict:
             await set_cache(cache_key, data)
             return data
     except pybreaker.CircuitBreakerError:
-        logger.warning("Circuit Breaker ABERTO para Zippopotam.us")
-    except Exception:
-        pass
+        logger.warning(f"Circuit Breaker ABERTO para Zippopotam.us ao buscar Postal: {country}-{postal}")
+    except Exception as e:
+        logger.error(f"Erro inesperado Zippopotamus para {country}-{postal}: {e}")
+
             
     # 2. Estratégia de Fallback: Nominatim (OpenStreetMap)
     try:
@@ -249,12 +425,15 @@ async def fetch_postal_internacional(country: str, postal: str) -> dict:
             await set_cache(cache_key, result)
             return result
     except pybreaker.CircuitBreakerError:
-        logger.warning("Circuit Breaker ABERTO para Nominatim")
-    except Exception:
-        pass
+        logger.warning(f"Circuit Breaker ABERTO para Nominatim ao buscar Postal: {country}-{postal}")
+    except Exception as e:
+        logger.error(f"Erro inesperado Nominatim para {country}-{postal}: {e}")
+
             
-    logger.warning(f"Postal não encontrado/404: {country}-{postal}")
-    raise ValueError("Código postal não encontrado ou país não suportado em nenhum dos provedores.")
+    country_name = get_country_name(country)
+    logger.warning(f"Postal não encontrado/404: {postal} ({country_name})")
+    raise ValueError(f"Código postal não encontrado ou país ({country_name}) não suportado.")
+
 
 @app.get("/api/postal/{country}/{postal}")
 async def buscar_postal(
@@ -264,6 +443,8 @@ async def buscar_postal(
     accept: Optional[str] = Header(None),
     api_key: str = Security(verify_api_key)
 ):
+    logger.info(f"Requisição Postal Internacional: {country}/{postal} | Formato: {formato or 'JSON'}")
+
     wants_xml = False
     if formato:
         wants_xml = formato.lower() == "xml"

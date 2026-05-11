@@ -1,0 +1,45 @@
+2026-05-11 16:40:52,673 - ERROR - Erro Redis ler: Timeout connecting to server
+2026-05-11 16:41:00,701 - ERROR - Erro Redis salvar: Timeout connecting to server
+2026-05-11 16:41:00,701 - ERROR - Erro Redis salvar: Timeout connecting to server
+2026-05-11 17:24:28,727 - ERROR - Erro Redis ler: Timeout connecting to server
+2026-05-11 17:24:28,727 - ERROR - Erro Redis ler: Timeout connecting to server
+2026-05-11 17:24:37,789 - ERROR - Erro Redis salvar: Timeout connecting to server
+2026-05-11 17:24:37,789 - ERROR - Erro Redis salvar: Timeout connecting to server
+2026-05-11 17:25:06,429 - ERROR - Erro Redis ler: Timeout connecting to server
+2026-05-11 17:25:06,429 - ERROR - Erro Redis ler: Timeout connecting to server
+2026-05-11 17:25:18,109 - ERROR - Erro Redis salvar: Timeout connecting to server
+2026-05-11 17:25:18,109 - ERROR - Erro Redis salvar: Timeout connecting to server
+2026-05-11 17:26:04,628 - ERROR - Erro Redis ler: Timeout connecting to server
+2026-05-11 17:26:04,628 - ERROR - Erro Redis ler: Timeout connecting to server
+2026-05-11 17:26:15,724 - ERROR - Erro Redis salvar: Timeout connecting to server
+2026-05-11 17:26:15,724 - ERROR - Erro Redis salvar: Timeout connecting to server
+2026-05-11 17:29:48,802 - ERROR - Erro Redis ler: Timeout connecting to server. Desativando cache temporariamente.
+2026-05-11 17:29:48,802 - ERROR - Erro Redis ler: Timeout connecting to server. Desativando cache temporariamente.
+2026-05-11 17:30:07,488 - WARNING - Postal não encontrado/404: al-46001
+2026-05-11 17:30:07,488 - WARNING - Postal não encontrado/404: al-46001
+2026-05-11 17:31:07,884 - WARNING - CEP não encontrado/404: 00000000
+2026-05-11 17:31:07,884 - WARNING - CEP não encontrado/404: 00000000
+2026-05-11 17:33:35,583 - WARNING - CEP não encontrado/404: 00000000
+2026-05-11 17:33:35,583 - WARNING - CEP não encontrado/404: 00000000
+2026-05-11 17:33:53,372 - ERROR - Erro Redis ler: Timeout connecting to server. Desativando cache temporariamente.
+2026-05-11 17:33:53,372 - ERROR - Erro Redis ler: Timeout connecting to server. Desativando cache temporariamente.
+2026-05-11 17:33:54,852 - WARNING - CEP não encontrado/404: 00000000 (Brasil)
+2026-05-11 17:33:54,852 - WARNING - CEP não encontrado/404: 00000000 (Brasil)
+2026-05-11 17:34:11,174 - WARNING - Postal não encontrado/404: 46001 (Andorra)
+2026-05-11 17:34:11,174 - WARNING - Postal não encontrado/404: 46001 (Andorra)
+2026-05-11 17:38:06,705 - WARNING - Postal não encontrado/404: 46001 (Andorra)
+2026-05-11 17:38:06,705 - WARNING - Postal não encontrado/404: 46001 (Andorra)
+2026-05-11 17:44:28,385 - ERROR - Erro Redis ler: Timeout connecting to server. Desativando cache temporariamente.
+2026-05-11 17:44:29,637 - WARNING - Postal não encontrado/404: 46001 (Andorra)
+2026-05-11 17:46:22,166 - ERROR - Erro Redis ler: Timeout connecting to server. Desativando cache temporariamente.
+2026-05-11 17:46:23,264 - WARNING - Postal não encontrado/404: 46001 (Andorra)
+2026-05-11 17:47:36,836 - INFO - Sistema de logs iniciado. Gravando diretamente em: logs\cep_api_2026-05-11.log
+2026-05-11 17:47:37,011 - INFO - Sistema de logs iniciado. Gravando diretamente em: logs\cep_api_2026-05-11.log
+2026-05-11 17:47:49,784 - ERROR - Erro Redis ler: Timeout connecting to server. Desativando cache temporariamente.
+2026-05-11 17:47:51,325 - WARNING - Postal não encontrado/404: 61450 (China)
+2026-05-11 17:49:22,362 - WARNING - Postal não encontrado/404: 61450 (Belize)
+2026-05-11 17:50:05,003 - INFO - Sistema de logs iniciado. Gravando diretamente em: logs\cep_api_2026-05-11.log
+2026-05-11 17:50:05,112 - INFO - Sistema de logs iniciado. Gravando diretamente em: logs\cep_api_2026-05-11.log
+2026-05-11 17:50:21,766 - INFO - Requisição Postal Internacional: md/61450 | Formato: xml
+2026-05-11 17:50:26,312 - ERROR - Erro Redis ler: Timeout connecting to server. Desativando cache temporariamente.
+2026-05-11 17:50:28,315 - WARNING - Postal não encontrado/404: 61450 (Moldávia)
