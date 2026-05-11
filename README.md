@@ -102,6 +102,7 @@ Requisição do Usuário
 ### Frontend Web
 
 - **Internacionalização (i18n)**: Seletor de idioma nativo e customizado (PT, EN, ES) com ícones do FlagCDN adaptando toda a interface perfeitamente para clientes e redes de hotelaria globais.
+- **Progressive Web App (PWA)**: Instalação nativa em Desktop/Mobile com Service Workers e ícone dedicado (`app_icon.png`).
 
 - **Identidade Visual**: Logo de alta resolução integrado fluidamente via CSS Blend Modes e Dark Mode nativo.
 - **Dropdown customizado** com bandeiras de 197 países via FlagCDN.
@@ -183,7 +184,7 @@ GET /api/postal/{country}/{postal}
 | Versão | Data | Descrição |
 | :--- | :--- | :--- |
 | **v2.0.0** | Mai/2026 | Arquitetura resiliente (Circuit Breaker, Redis), Segurança X-API-KEY e i18n. |
-| **v1.1.0** | Mai/2026 | Refatoração de Layout (CSS Grid/Flexbox) e Identidade Visual (Novo Logo). |
+| **v1.1.0** | Mai/2026 | Suporte a PWA, refatoração de Layout (CSS Grid/Flexbox) e Identidade Visual (Novo Logo). |
 | **v1.0.0** | Mai/2026 | Lançamento oficial — Backend assíncrono, motor de fallback e interface Dark Mode. |
 
 > Veja as notas completas da versão atual em [RELEASE_NOTES_v2.0.0.md](RELEASE_NOTES_v2.0.0.md).
