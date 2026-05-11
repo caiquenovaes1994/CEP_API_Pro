@@ -1,0 +1,13 @@
+name: Block Pages Deployment
+
+on:
+  workflow_run:
+    workflows: ["pages build and deployment"]
+    types: [requested]
+
+jobs:
+  cancel-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Acknowledge Block
+        run: echo "Blocking automatic Pages deployment"
