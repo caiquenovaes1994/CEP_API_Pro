@@ -1,6 +1,33 @@
+# Ambiente Virtual e Dependências
 .venv/
+node_modules/
+dist/
+build/
+*.egg-info/
+
+# Python Cache
 __pycache__/
 *.pyc
-cep_api.log
-cep_app.log
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs do Sistema
+logs/*.log
+*.log
+
+# Variáveis de Ambiente e Segredos
 .env
+.flaskenv
+
+# IDEs e Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
