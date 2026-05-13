@@ -28,6 +28,13 @@ logs/*.log
 *.swp
 *.swo
 
-# Sistema Operacional
+# Sistema Operacional e Temporários
 .DS_Store
 Thumbs.db
+*.tmp
+*.temp
+*.bak
+.cache/
+.npm/
+.eslintcache
+.stylelintcache

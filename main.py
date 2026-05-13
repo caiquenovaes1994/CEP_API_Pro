@@ -6,12 +6,10 @@ import httpx
 import xml.etree.ElementTree as ET
 from typing import Optional
 import logging
-from logging.handlers import TimedRotatingFileHandler
 import datetime
 import pybreaker
 import redis.asyncio as redis
 import json
-import shutil
 import os
 
 
