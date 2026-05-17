@@ -4,16 +4,19 @@
 
 ## Hub Global de Busca de Endereços
 
-![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
-![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
-![HTTPX](https://img.shields.io/badge/HTTPX-async-blue?style=for-the-badge)
-![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
-![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
+![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?style=flat&logo=python&logoColor=white)
+![FastAPI 0.111.0](https://img.shields.io/badge/FastAPI-0.111.0-009688?style=flat&logo=fastapi&logoColor=white)
+![Uvicorn 0.30.1](https://img.shields.io/badge/Uvicorn-0.30.1-499848?style=flat)
+![HTTPX](https://img.shields.io/badge/HTTPX-Async-blue?style=flat)
+![Redis](https://img.shields.io/badge/Redis-Cache-DC382D?style=flat&logo=redis&logoColor=white)
+![JavaScript ES6+](https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?style=flat&logo=javascript&logoColor=black)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)
 
-[![Version](https://img.shields.io/badge/version-2.0.0-brightgreen?style=flat-square)](RELEASE_NOTES_v2.0.0.md)
-![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
-![Status](https://img.shields.io/badge/status-production--ready-success?style=flat-square)
+[![Versão 2.0.0](https://img.shields.io/badge/Versão-2.0.0-brightgreen?style=flat)](RELEASE_NOTES_v2.0.0.md)
+[![Licença MIT](https://img.shields.io/badge/Licença-MIT-blue?style=flat)](LICENSE)
+![Status Produção](https://img.shields.io/badge/Status-Produção-success?style=flat)
+[![Código de Conduta](https://img.shields.io/badge/Código_de_Conduta-Contributor_Covenant-ff69b4?style=flat)](CODE_OF_CONDUCT.md)
 
 *Uma API assíncrona, resiliente e com interface web premium para busca de códigos postais do Brasil e de 197 países ao redor do mundo.*
 
@@ -197,5 +200,5 @@ GET /api/postal/{country}/{postal}
 
 > *Simplificando a geolocalização global, um código postal de cada vez.*
 
-[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/caiquenovaes1994/)
-[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](https://mail.google.com/mail/?view=cm&fs=1&to=caiquenovaes1994@gmail.com)
+[![GitHub](https://img.shields.io/badge/GitHub-caiquenovaes1994-181717?style=flat&logo=github&logoColor=white)](https://github.com/caiquenovaes1994)
+[![E-mail](https://img.shields.io/badge/E--mail-caiquenovaes1994%40gmail.com-EA4335?style=flat&logo=gmail&logoColor=white)](mailto:caiquenovaes1994@gmail.com)
